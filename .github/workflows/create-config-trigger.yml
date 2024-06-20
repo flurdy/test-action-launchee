@@ -1,7 +1,7 @@
 name: Create Commit and PR
 
 on:
-  workflow_dispatch:
+  workflow_call:
     inputs:
       repositoryName:
         description: "Repository name"
@@ -26,9 +26,6 @@ jobs:
           commit-message: "Create pull request"
           title: "New Pull Request"
           branch: "create-config-${{ env.repositoryName }}"
-          body: |
-            This is a new pull request.
-            Please review and merge it.
       - name: Auto approve
         if: steps.cpr.outputs.pull-request-operation == 'created'
         run: gh pr review --approve "${{ steps.cpr.outputs.pull-request-number }}"
