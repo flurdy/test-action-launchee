@@ -1,0 +1,40 @@
+name: Create Commit and PR
+
+on:
+  workflow_dispatch:
+    inputs:
+      repositoryName:
+        description: "Repository name"
+        required: true
+        type: string
+
+jobs:
+  create-commit-and-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Commit a change
+        run: |
+          echo "New commit" >> file.txt
+          git add file.txt
+          git commit -m "Add new file"
+      - name: Create pull request
+        uses: peter-evans/create-pull-request@6.1.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "Create pull request"
+          title: "New Pull Request"
+          branch: "create-config-${{ env.REPOSITORY_NAME }}"
+          body: |
+            This is a new pull request.
+            Please review and merge it.
+      - name: Auto approve
+        if: steps.cpr.outputs.pull-request-operation == 'created'
+        run: gh pr review --approve "${{ steps.cpr.outputs.pull-request-number }}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Enable Pull Request Automerge
+        run: gh pr merge --merge --auto "${{ steps.cpr.outputs.pull-request-number }}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
