@@ -25,7 +25,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: "Create pull request"
           title: "New Pull Request"
-          branch: "create-config-${{ env.REPOSITORY_NAME }}"
+          branch: "create-config-${{ env.repositoryName }}"
           body: |
             This is a new pull request.
             Please review and merge it.
