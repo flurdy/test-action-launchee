@@ -12,7 +12,7 @@ jobs:
   validate-service:
     uses: ./.github/workflows/service-validation.yml
     with:
-      repositoryName: ${{ github.event.inputs.repositoryName }}
+      repositoryName: ${{ env.repositoryName }}
     #  secrets:
     #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -20,7 +20,7 @@ jobs:
     uses: ./.github/workflows/config-commit.yml
     needs: validate-service
     with:
-      repositoryName: ${{ github.event.inputs.repositoryName }}
+      repositoryName: ${{ env.repositoryName }}
     permissions:
       contents: write
     #  secrets:
@@ -29,12 +29,14 @@ jobs:
   validate-commit:
     uses: ./.github/workflows/commit-validation.yml
     needs: create-commit
+    permissions:
+      contents: read
 
   merge-commit:
     uses: ./.github/workflows/config-merge.yml
     needs: validate-commit
     with:
-      repositoryName: ${{ github.event.inputs.repositoryName }}
+      repositoryName: ${{ env.repositoryName }}
     permissions:
       contents: write
     #  secrets:
