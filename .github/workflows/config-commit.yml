@@ -35,3 +35,9 @@ jobs:
       - name: Push change
         run: |
           git push -u origin ${{ env.service-branch }}
+
+  validate-commit:
+    uses: ./.github/workflows/commit-validation.yml
+    needs: create-commit-branch
+    permissions:
+      contents: read

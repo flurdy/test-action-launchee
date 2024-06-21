@@ -26,11 +26,11 @@ jobs:
     #  secrets:
     #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  validate-commit:
-    uses: ./.github/workflows/commit-validation.yml
-    needs: create-commit
-    permissions:
-      contents: read
+  #   validate-commit:
+  #     uses: ./.github/workflows/commit-validation.yml
+  #     needs: create-commit
+  #     permissions:
+  #       contents: read
 
   merge-commit:
     uses: ./.github/workflows/config-merge.yml
