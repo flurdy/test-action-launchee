@@ -9,16 +9,16 @@ on:
         type: string
 
 jobs:
-  validate-service:
-    uses: ./.github/workflows/service-validation.yml
-    with:
-      repositoryName: ${{ inputs.repositoryName }}
-    #  secrets:
-    #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #   validate-service:
+  #     uses: ./.github/workflows/service-validation.yml
+  #     with:
+  #       repositoryName: ${{ inputs.repositoryName }}
+  #  secrets:
+  #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   create-commit:
     uses: ./.github/workflows/config-commit.yml
-    needs: validate-service
+    #  needs: validate-service
     with:
       repositoryName: ${{ inputs.repositoryName }}
     permissions:
