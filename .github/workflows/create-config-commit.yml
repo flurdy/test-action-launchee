@@ -1,4 +1,4 @@
-name: Create Commit and PR
+name: Create config directly via commit
 
 on:
   workflow_dispatch:
@@ -27,7 +27,7 @@ jobs:
         run: |
           git config --global user.email "30552+flurdy@users.noreply.github.com"
           git config --global user.name "flurdy"
-          #  git checkout -b new-service-${{ env.repositoryName }}
+          git checkout -b new-service-${{ env.repositoryName }}
           mkdir -p services/${{ env.repositoryName }}/dev
           echo "New commit" >> services/${{ env.repositoryName }}/defaults.env
           echo "New commit" >> services/${{ env.repositoryName }}/dev/${{ env.repositoryName }}.env

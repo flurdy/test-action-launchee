@@ -1,4 +1,4 @@
-name: Create Commit and PR
+name: Create config directly via PR
 
 on:
   workflow_dispatch:
