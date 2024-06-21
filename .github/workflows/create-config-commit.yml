@@ -19,32 +19,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses:
-          actions/checkout@v4
-          #  with:
-          #    repository: ${{ github.repository }}
+        uses: actions/checkout@v4
+          with:
+            repository: ${{ github.repository }}
+            ref: ${{ github.ref }}
       - name: Commit a change
         run: |
           git config --global user.email "30552+flurdy@users.noreply.github.com"
           git config --global user.name "flurdy"
+          #  git checkout -b new-service-${{ env.repositoryName }}
           mkdir -p services/${{ env.repositoryName }}/dev
           echo "New commit" >> services/${{ env.repositoryName }}/defaults.env
           echo "New commit" >> services/${{ env.repositoryName }}/dev/${{ env.repositoryName }}.env
           git add services/${{ env.repositoryName }}
           git commit -m "Add service ${{ env.repositoryName }}"
-      - name: Create pull request
-        uses: peter-evans/create-pull-request@v6.1.0
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "Create pull request"
-          title: "New Pull Request"
-          branch: "create-config-${{ env.repositoryName }}"
-      - name: Auto approve
-        if: steps.cpr.outputs.pull-request-operation == 'created'
-        run: gh pr review --approve "${{ steps.cpr.outputs.pull-request-number }}"
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Enable Pull Request Automerge
-        run: gh pr merge --merge --auto "${{ steps.cpr.outputs.pull-request-number }}"
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          git push origin new-service-${{ env.repositoryName }}
+          git checkout main
+          git pull
+          git merge new-service-${{ env.repositoryName }}
+          git push
