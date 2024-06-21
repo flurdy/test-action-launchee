@@ -1,0 +1,16 @@
+name: Service validation
+
+on:
+  workflow_call:
+    inputs:
+      repositoryName:
+        description: "Repository name"
+        required: true
+        type: string
+
+jobs:
+  validate-config:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4

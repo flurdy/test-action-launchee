@@ -1,0 +1,27 @@
+name: Merge config
+
+on:
+  workflow_call:
+    inputs:
+      repositoryName:
+        description: "Repository name"
+        required: true
+        type: string
+
+jobs:
+  create-commit-and-pr:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Merge to main
+        run: |
+          git checkout create-config-${{ env.repositoryName }}
+          git pull
+          git checkout main
+          git pull
+          git merge create-config-${{ env.repositoryName }}
+          git push origin main

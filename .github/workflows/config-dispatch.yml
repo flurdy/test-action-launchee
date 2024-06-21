@@ -1,0 +1,34 @@
+name: Create config orchestration
+
+on:
+  workflow_dispatch:
+    inputs:
+      repositoryName:
+        description: "Repository name"
+        required: true
+        type: string
+
+jobs:
+  validate-service:
+    uses: ./.github/workflows/service-validation.yml
+    with:
+      repositoryName: ${{ github.event.inputs.repositoryName }}
+    secrets:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  create-commit:
+    uses: ./.github/workflows/create-config-commit.yml
+    with:
+      repositoryName: ${{ github.event.inputs.repositoryName }}
+    secrets:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  validate-commit:
+    uses: ./.github/workflows/commit-validation.yml
+
+  merge-commit:
+    uses: ./.github/workflows/create-config-merge.yml
+    with:
+      repositoryName: ${{ github.event.inputs.repositoryName }}
+    secrets:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

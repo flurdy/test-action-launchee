@@ -1,0 +1,10 @@
+name: Validate config
+
+on: workflow_call
+
+jobs:
+  validate-config:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
