@@ -14,3 +14,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+      - name: Validating service
+        run: |
+          echo "Validating service ${{ env.repositoryName }} is a valid repository"

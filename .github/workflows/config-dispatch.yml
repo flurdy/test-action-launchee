@@ -21,6 +21,8 @@ jobs:
     needs: validate-service
     with:
       repositoryName: ${{ github.event.inputs.repositoryName }}
+    permissions:
+      contents: write
     #  secrets:
     #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -33,5 +35,7 @@ jobs:
     needs: validate-commit
     with:
       repositoryName: ${{ github.event.inputs.repositoryName }}
+    permissions:
+      contents: write
     #  secrets:
     #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

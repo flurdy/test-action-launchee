@@ -8,3 +8,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+      - name: Validating config
+        run: |
+          echo "Validating configurations"
