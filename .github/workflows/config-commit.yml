@@ -38,9 +38,14 @@ jobs:
           echo "New commit" >> ${{ env.service-root}}/dev/${{ inputs.repositoryName }}.env
           git add ${{ env.service-root }}
           git commit -m "Add service ${{ inputs.repositoryName }}"
-      - name: Push change
-        run: |
-          git push -u origin ${{ env.service-branch }}
+      # - name: Push change
+      #   run: |
+      #     git push -u origin ${{ env.service-branch }}
+      - uses: actions/upload-artifact@v4
+        name: "Temporary upload git repo"
+        with:
+          name: gitrepo-v4
+          path: .
 
   validate-commit:
     uses: ./.github/workflows/commit-validation.yml
@@ -55,8 +60,13 @@ jobs:
       run:
         shell: bash
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      # - name: Checkout repository
+      #   uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        name: "Download git repo"
+        with:
+          name: gitrepo-v4
+          path: .
       - name: List branches
         run: |
           echo "Branches"
