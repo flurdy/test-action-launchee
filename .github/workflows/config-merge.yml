@@ -9,7 +9,7 @@ on:
         type: string
 
 jobs:
-  create-commit-and-pr:
+  merge-commit-branch:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -17,11 +17,17 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      - name: Merge to main
+      - name: Checkout branch
         run: |
+          git config --global user.email "30552+flurdy@users.noreply.github.com"
+          git config --global user.name "flurdy"
           git checkout create-config-${{ inputs.repositoryName }}
           git pull
           git checkout main
           git pull
-          git merge create-config-${{ inputs.repositoryName }}
+      - name: Merge to main
+        run: |
+          git merge --no-ff --no-commit create-config-${{ inputs.repositoryName }}
+      - name: Push merge
+        run: |
           git push origin main

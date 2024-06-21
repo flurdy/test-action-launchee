@@ -9,11 +9,16 @@ on:
         type: string
 
 jobs:
-  create-commit-and-pr:
+  create-commit-branch:
     runs-on: ubuntu-latest
     defaults:
       run:
         shell: bash
+    env:
+      service-root: services/${{ inputs.repositoryName }}
+      service-branch: create-config-${{ inputs.repositoryName }}
+    outputs:
+      service-branch: ${{ env.service-branch }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -21,10 +26,12 @@ jobs:
         run: |
           git config --global user.email "30552+flurdy@users.noreply.github.com"
           git config --global user.name "flurdy"
-          git checkout -b create-config-${{ inputs.repositoryName }}
-          mkdir -p services/${{ inputs.repositoryName }}/dev
-          echo "New commit" >> services/${{ inputs.repositoryName }}/defaults.env
-          echo "New commit" >> services/${{ inputs.repositoryName }}/dev/${{ inputs.repositoryName }}.env
-          git add services/${{ inputs.repositoryName }}
+          git checkout -b ${{ env.service-branch }}
+          mkdir -p ${{ env.service-root }}/dev
+          echo "New commit" >> ${{ env.service-root}}/defaults.env
+          echo "New commit" >> ${{ env.service-root}}/dev/${{ inputs.repositoryName }}.env
+          git add ${{ env.service-root }}
           git commit -m "Add service ${{ inputs.repositoryName }}"
-          git push origin create-config-${{ inputs.repositoryName }}
+      - name: Push change
+        run: |
+          git push -u origin ${{ env.service-branch }}
