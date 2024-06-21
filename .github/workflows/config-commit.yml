@@ -41,3 +41,11 @@ jobs:
     needs: create-commit-branch
     permissions:
       contents: read
+
+  merge-commit:
+    uses: ./.github/workflows/config-merge.yml
+    needs: validate-commit
+    with:
+      repositoryName: ${{ inputs.repositoryName }}
+    permissions:
+      contents: write

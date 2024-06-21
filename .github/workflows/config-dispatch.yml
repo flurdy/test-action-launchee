@@ -31,14 +31,13 @@ jobs:
   #     needs: create-commit
   #     permissions:
   #       contents: read
-
-  merge-commit:
-    uses: ./.github/workflows/config-merge.yml
-    needs: create-commit
-    #  needs: validate-commit
-    with:
-      repositoryName: ${{ inputs.repositoryName }}
-    permissions:
-      contents: write
-    #  secrets:
-    #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#   merge-commit:
+#     uses: ./.github/workflows/config-merge.yml
+#     needs: create-commit
+#     #  needs: validate-commit
+#     with:
+#       repositoryName: ${{ inputs.repositoryName }}
+#     permissions:
+#       contents: write
+#     #  secrets:
+#     #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
