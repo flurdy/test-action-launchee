@@ -1,6 +1,12 @@
 name: Create Commit and PR
 
 on:
+  workflow_dispatch:
+    inputs:
+      repositoryName:
+        description: "Repository name"
+        required: true
+        type: string
   workflow_call:
     inputs:
       repositoryName:
