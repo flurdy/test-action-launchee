@@ -34,7 +34,8 @@ jobs:
 
   merge-commit:
     uses: ./.github/workflows/config-merge.yml
-    needs: validate-commit
+    needs: create-commit
+    #  needs: validate-commit
     with:
       repositoryName: ${{ inputs.repositoryName }}
     permissions:
