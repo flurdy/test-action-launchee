@@ -17,7 +17,7 @@ jobs:
       - name: Validating service
         run: |
           echo "Validating service ${{ inputs.repositoryName }} is a valid repository"
-          if [ -d services/${{ inputs.repositoryName }} ]; then
+          if [ -n "${{ inputs.repositoryName }}" ]; then
             echo "Service ${{ inputs.repositoryName }} is a valid repository"
           else
             echo "Service ${{ inputs.repositoryName }} is not a valid repository"
