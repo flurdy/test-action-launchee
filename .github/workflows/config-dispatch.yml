@@ -18,6 +18,7 @@ jobs:
 
   create-commit:
     uses: ./.github/workflows/config-commit.yml
+    needs: validate-service
     with:
       repositoryName: ${{ github.event.inputs.repositoryName }}
     #  secrets:
@@ -25,9 +26,11 @@ jobs:
 
   validate-commit:
     uses: ./.github/workflows/commit-validation.yml
+    needs: create-commit
 
   merge-commit:
     uses: ./.github/workflows/config-merge.yml
+    needs: validate-commit
     with:
       repositoryName: ${{ github.event.inputs.repositoryName }}
     #  secrets:
