@@ -17,7 +17,7 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   create-commit:
-    uses: ./.github/workflows/create-config-commit.yml
+    uses: ./.github/workflows/config-commit.yml
     with:
       repositoryName: ${{ github.event.inputs.repositoryName }}
     secrets:
@@ -27,7 +27,7 @@ jobs:
     uses: ./.github/workflows/commit-validation.yml
 
   merge-commit:
-    uses: ./.github/workflows/create-config-merge.yml
+    uses: ./.github/workflows/config-merge.yml
     with:
       repositoryName: ${{ github.event.inputs.repositoryName }}
     secrets:
