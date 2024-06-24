@@ -85,6 +85,9 @@ jobs:
       #   with:
       #     name: gitrepo-v4
       #     path: .
+      - name: Fetch branches
+        run: |
+          git fetch
       - name: List branches
         run: |
           echo "Branches"
