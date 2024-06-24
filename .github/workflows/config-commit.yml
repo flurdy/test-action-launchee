@@ -53,14 +53,6 @@ jobs:
           git branch -a
           echo "Remote branches"
           git branch -r
-      # - name: Merge to main
-      #   run: |
-      #     git merge --no-ff --no-commit ${{ env.service-branch }}
-      # - uses: actions/upload-artifact@v4
-      #   name: "Temporary upload git repo"
-      #   with:
-      #     name: gitrepo-v4
-      #     path: .
 
   validate-commit:
     uses: ./.github/workflows/commit-validation.yml
@@ -77,14 +69,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      # - name: Remove git
-      #   run: |
-      #     rm -rf .git
-      # - uses: actions/download-artifact@v4
-      #   name: "Download git repo"
-      #   with:
-      #     name: gitrepo-v4
-      #     path: .
       - name: Fetch branches
         run: |
           git fetch
@@ -102,7 +86,7 @@ jobs:
           git checkout main
       - name: Merge to main
         run: |
-          git merge --no-ff --no-commit ${{ env.service-branch }}
+          git merge --no-ff ${{ env.service-branch }}
       - name: Push merge
         run: |
           git push origin main
