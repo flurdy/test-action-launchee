@@ -47,6 +47,12 @@ jobs:
       - name: Push change
         run: |
           git push -u origin ${{ env.service-branch }}
+      - name: List branches
+        run: |
+          echo "Branches"
+          git branch -a
+          echo "Remote branches"
+          git branch -r
       # - name: Merge to main
       #   run: |
       #     git merge --no-ff --no-commit ${{ env.service-branch }}
