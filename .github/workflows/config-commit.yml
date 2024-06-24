@@ -71,9 +71,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      - name: Remove git
-        run: |
-          rm -rf .git
+      # - name: Remove git
+      #   run: |
+      #     rm -rf .git
       # - uses: actions/download-artifact@v4
       #   name: "Download git repo"
       #   with:
