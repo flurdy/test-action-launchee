@@ -44,14 +44,17 @@ jobs:
           echo "New commit" >> ${{ env.service-root}}/dev/${{ inputs.repositoryName }}.env
           git add ${{ env.service-root }}
           git commit -m "Add service ${{ inputs.repositoryName }}"
-      # - name: Push change
+      - name: Push change
+        run: |
+          git push -u origin ${{ env.service-branch }}
+      # - name: Merge to main
       #   run: |
-      #     git push -u origin ${{ env.service-branch }}
-      - uses: actions/upload-artifact@v4
-        name: "Temporary upload git repo"
-        with:
-          name: gitrepo-v4
-          path: .
+      #     git merge --no-ff --no-commit ${{ env.service-branch }}
+      # - uses: actions/upload-artifact@v4
+      #   name: "Temporary upload git repo"
+      #   with:
+      #     name: gitrepo-v4
+      #     path: .
 
   validate-commit:
     uses: ./.github/workflows/commit-validation.yml
@@ -71,11 +74,11 @@ jobs:
       - name: Remove git
         run: |
           rm -rf .git
-      - uses: actions/download-artifact@v4
-        name: "Download git repo"
-        with:
-          name: gitrepo-v4
-          path: .
+      # - uses: actions/download-artifact@v4
+      #   name: "Download git repo"
+      #   with:
+      #     name: gitrepo-v4
+      #     path: .
       - name: List branches
         run: |
           echo "Branches"
@@ -84,12 +87,12 @@ jobs:
           git branch -r
       - name: Checkout branch
         run: |
-          #  git config --global user.email "30552+flurdy@users.noreply.github.com"
-          #  git config --global user.name "flurdy"
-           git checkout ${{ env.service-branch }}
-           git pull
-           git checkout main
-           git pull
+          git config --global user.email "30552+flurdy@users.noreply.github.com"
+          git config --global user.name "flurdy"
+          git checkout ${{ env.service-branch }}
+          git pull
+          git checkout main
+          git pull
       - name: Merge to main
         run: |
           git merge --no-ff --no-commit ${{ env.service-branch }}
