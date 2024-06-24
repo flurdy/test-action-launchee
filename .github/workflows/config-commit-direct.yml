@@ -45,8 +45,8 @@ jobs:
     needs: create-commit-branch
     permissions:
       contents: read
-    with:
-      branchName: ${{ env.service-branch }}
+    #  with:
+    #    branchName: ${{ env.service-branch }}
 
   merge-commit-branch:
     needs: validate-commit

@@ -1,11 +1,12 @@
 name: Validate config
 
-on: workflow_call:
-    inputs:
-      bracnhName:
-        description: "Branch name"
-        required: true
-        type: string
+on:
+  workflow_call
+  #  inputs:
+  #    branchName:
+  #      description: "Branch name"
+  #      required: true
+  #      type: string
 
 jobs:
   validate-config:
