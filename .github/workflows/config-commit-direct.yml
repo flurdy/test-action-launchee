@@ -34,15 +34,11 @@ jobs:
         run: |
           git config --global user.email "30552+flurdy@users.noreply.github.com"
           git config --global user.name "flurdy"
-          git checkout -b ${{ env.service-branch }}
           mkdir -p ${{ env.service-root }}/dev
           echo "New commit" >> ${{ env.service-root}}/defaults.env
           echo "New commit" >> ${{ env.service-root}}/dev/${{ inputs.repositoryName }}.env
           git add ${{ env.service-root }}
           git commit -m "Add service ${{ inputs.repositoryName }}"
-      - name: Push change
-        run: |
-          git push -u origin ${{ env.service-branch }}
 
   validate-commit:
     uses: ./.github/workflows/commit-validation.yml
@@ -64,15 +60,6 @@ jobs:
       - name: Fetch branches
         run: |
           git fetch
-      - name: Checkout branch
-        run: |
-          git config --global user.email "30552+flurdy@users.noreply.github.com"
-          git config --global user.name "flurdy"
-          git checkout ${{ env.service-branch }}
-          git checkout main
-      - name: Merge to main
-        run: |
-          git merge --no-ff ${{ env.service-branch }}
       - name: Push merge
         run: |
           git push origin main
