@@ -9,7 +9,7 @@ on:
         type: string
 
 jobs:
-  validate-config:
+  validate-service:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
