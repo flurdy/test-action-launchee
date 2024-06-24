@@ -96,9 +96,7 @@ jobs:
           git config --global user.email "30552+flurdy@users.noreply.github.com"
           git config --global user.name "flurdy"
           git checkout ${{ env.service-branch }}
-          git pull
           git checkout main
-          git pull
       - name: Merge to main
         run: |
           git merge --no-ff --no-commit ${{ env.service-branch }}
