@@ -7,6 +7,12 @@ on:
         description: "Repository name"
         required: true
         type: string
+  workflow_dispatch:
+    inputs:
+      repositoryName:
+        description: "Repository name"
+        required: true
+        type: string
 
 env:
   service-branch: create-config-${{ inputs.repositoryName }}
@@ -60,8 +66,11 @@ jobs:
       run:
         shell: bash
     steps:
-      # - name: Checkout repository
-      #   uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Remove git
+        run: |
+          rm -rf .git
       - uses: actions/download-artifact@v4
         name: "Download git repo"
         with:
@@ -75,12 +84,12 @@ jobs:
           git branch -r
       - name: Checkout branch
         run: |
-          git config --global user.email "30552+flurdy@users.noreply.github.com"
-          git config --global user.name "flurdy"
-          git checkout ${{ env.service-branch }}
-          git pull
-          git checkout main
-          git pull
+          #  git config --global user.email "30552+flurdy@users.noreply.github.com"
+          #  git config --global user.name "flurdy"
+           git checkout ${{ env.service-branch }}
+           git pull
+           git checkout main
+           git pull
       - name: Merge to main
         run: |
           git merge --no-ff --no-commit ${{ env.service-branch }}
