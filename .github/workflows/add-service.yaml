@@ -79,5 +79,6 @@ jobs:
           git push origin main
       - name: Delete branch
         run: |
+          git checkout main
           git branch -d ${{ env.service-branch }}
           git push origin -d ${{ env.service-branch }}
