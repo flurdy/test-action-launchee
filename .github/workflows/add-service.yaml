@@ -85,12 +85,12 @@ jobs:
         run: git push -u origin ${{ env.service-branch }}
       - name: Merge to main
         run: |
+          git checkout main
           git merge --no-ff ${{ env.service-branch }}
       - name: Push merge
         run: |
           git push origin main
       - name: Delete branch
         run: |
-          git checkout main
           git branch -d ${{ env.service-branch }}
           git push origin -d ${{ env.service-branch }}
