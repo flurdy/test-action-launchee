@@ -82,10 +82,11 @@ jobs:
           fi
       - name: Merge to main
         run: |
-          git checkout main
           if [[ -z "$(git diff main...)" ]]; then
             echo "No changes to merge"
+            git checkout main
           else
+            git checkout main
             git merge --no-ff ${{ env.service-branch }}
           fi
       - name: Push merge
