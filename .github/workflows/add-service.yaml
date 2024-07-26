@@ -1,0 +1,81 @@
+name: Create a new service configuration
+
+on:
+  workflow_call:
+    inputs:
+      serviceName:
+        description: "Service name"
+        required: true
+        type: string
+  workflow_dispatch:
+    inputs:
+      serviceName:
+        description: "Service name"
+        required: true
+        type: string
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+env:
+  service-branch: create-config-${{ inputs.serviceName }}
+  service-root: "services/${{ inputs.serviceName }}"
+  config-comment: "# Config for ${{ inputs.serviceName }}, settings should be in KEY=value format"
+  cdp-environments: "infra-dev management dev test perf-test prod"
+
+jobs:
+  add_service:
+    name: "Add a new service"
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Checkout new branch
+        run: git checkout -b ${{ env.service-branch }}
+      - name: make service directories
+        run: |
+          mkdir -p ${{ env.service-root }}/infra-dev ${{ env.service-root }}/management
+          mkdir -p ${{ env.service-root }}/dev  ${{ env.service-root }}/test
+          mkdir -p ${{ env.service-root }}/perf-test ${{ env.service-root }}/prod
+      - name: Create empty service configurations
+        run: |
+          echo "${{ env.config-comment }}" >> ${{ env.service-root }}/defaults.env
+          for cdpenv in ${{ env.cdp-environments }}; do
+            echo "${{ env.config-comment }}" >> ${{ env.service-root }}/${cdpenv}/defaults.env
+          done
+      - name: List changes
+        run: |
+          tree ${{ env.service-root }}
+          echo "Contents of ${{ env.service-root }}/defaults.env"
+          cat ${{ env.service-root }}/defaults.env
+          echo "Contents of ${{ env.service-root }}/dev.env"
+          cat ${{ env.service-root }}/dev.env
+
+      # - name: Configure git committer
+      # - name: Commit changes
+      #   run: |
+      #     git add ${{ env.service-root }}
+      #     git commit -m "Add service configuration for ${{ inputs.serviceName }}"
+      # - name: Push branch
+      #   run: git push -u origin ${{ env.service-branch }}
+      # - name: Validate branch
+      #   run: |
+      # - name: Merge to main
+      #   run: |
+      #     git merge --no-ff ${{ env.service-branch }}
+      # - name: Push merge
+      #   run: |
+      #     git push origin main
+      # - name: Delete branch
+      #   run: |
+      #     git branch -d ${{ env.service-branch }}
+      #     git push origin -d ${{ env.service-branch }}
