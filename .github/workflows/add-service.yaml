@@ -28,10 +28,10 @@ env:
   service-root: "services/${{ inputs.repositoryName }}"
   config-comment: "# Config for ${{ inputs.repositoryName }}, settings should be in KEY=value format"
   cdp-environments: "infra-dev management dev test perf-test prod"
-#   cdp-gitbot-email: "131385681+cdp-gh-bot[bot]@users.noreply.github.com"
-#   cdp-gitbot-name: "cdp-gh-bot[bot]"
+  #   cdp-gitbot-email: "131385681+cdp-gh-bot[bot]@users.noreply.github.com"
+  #   cdp-gitbot-name: "cdp-gh-bot[bot]"
   cdp-gitbot-email: "30552+flurdy@users.noreply.github.com"
-  cdp-gitbot-name:  "flurdy"
+  cdp-gitbot-name: "flurdy"
 
 jobs:
   add_service:
@@ -81,18 +81,16 @@ jobs:
           git commit -m "Add service configuration for ${{ inputs.repositoryName }}"
           git status
           git log --oneline
-      # - name: Push branch
-      #   run: git push -u origin ${{ env.service-branch }}
-      # - name: Validate branch
-      #   run: |
-      # - name: Merge to main
-      #   run: |
-      #     git merge --no-ff ${{ env.service-branch }}
-      # - name: Push merge
-      #   run: |
-      #     git push origin main
-      # - name: Delete branch
-      #   run: |
-      #     git checkout main
-      #     git branch -d ${{ env.service-branch }}
-      #     git push origin -d ${{ env.service-branch }}
+      - name: Push branch
+        run: git push -u origin ${{ env.service-branch }}
+      - name: Merge to main
+        run: |
+          git merge --no-ff ${{ env.service-branch }}
+      - name: Push merge
+        run: |
+          git push origin main
+      - name: Delete branch
+        run: |
+          git checkout main
+          git branch -d ${{ env.service-branch }}
+          git push origin -d ${{ env.service-branch }}
