@@ -3,13 +3,13 @@ name: Create a new service configuration
 on:
   workflow_call:
     inputs:
-      serviceName:
-        description: "Service name"
+      repositoryName:
+        description: "Repository name"
         required: true
         type: string
   workflow_dispatch:
     inputs:
-      serviceName:
+      repositoryName:
         description: "Service name"
         required: true
         type: string
@@ -18,14 +18,21 @@ concurrency:
   group: ${{ github.workflow }}
   cancel-in-progress: false
 
+run-name: ${{ inputs.repositoryName }}
+
 permissions:
   contents: write
 
 env:
-  service-branch: create-config-${{ inputs.serviceName }}
-  service-root: "services/${{ inputs.serviceName }}"
-  config-comment: "# Config for ${{ inputs.serviceName }}, settings should be in KEY=value format"
+  service-branch: create-config-${{ inputs.repositoryName }}
+  service-root: "services/${{ inputs.repositoryName }}"
+  config-comment: "# Config for ${{ inputs.repositoryName }}, settings should be in KEY=value format"
   cdp-environments: "infra-dev management dev test perf-test prod"
+#   cdp-gitbot-email: "131385681+cdp-gh-bot[bot]@users.noreply.github.com"
+#   cdp-gitbot-name: "cdp-gh-bot[bot]"
+
+  cdp-gitbot-email: "30552+flurdy@users.noreply.github.com"
+  cdp-gitbot-name:  "flurdy"
 
 jobs:
   add_service:
@@ -50,35 +57,43 @@ jobs:
         run: |
           echo "${{ env.config-comment }}" >> ${{ env.service-root }}/defaults.env
           for cdpenv in ${{ env.cdp-environments }}; do
-            echo "${{ env.config-comment }}" >> ${{ env.service-root }}/${cdpenv}/${{ inputs.serviceName }}.env
+            echo "${{ env.config-comment }}" >> ${{ env.service-root }}/${cdpenv}/${{ inputs.repositoryName }}.env
           done
       - name: List changes
         run: |
           tree ${{ env.service-root }}
           echo "Contents of ${{ env.service-root }}/defaults.env"
           cat ${{ env.service-root }}/defaults.env
-          echo "Contents of ${{ env.service-root }}/dev/${{ inputs.serviceName }}.env"
-          cat ${{ env.service-root }}/dev/${{ inputs.serviceName }}.env
+          echo "Contents of ${{ env.service-root }}/dev/${{ inputs.repositoryName }}.env"
+          cat ${{ env.service-root }}/dev/${{ inputs.repositoryName }}.env
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Check env files
+        run: python validate.py
       - name: Configure git committer
         run: |
-          git config --global user.email "30552+flurdy@users.noreply.github.com"
-          git config --global user.name "flurdy"
+          git config user.email "${{ env.cdp-gitbot-email }}"
+          git config user.name "${{ env.cdp-gitbot-name }}"
       - name: Commit changes
         run: |
           git add ${{ env.service-root }}
-          git commit -m "Add service configuration for ${{ inputs.serviceName }}"
-      - name: Push branch
-        run: git push -u origin ${{ env.service-branch }}
-      - name: Validate branch
-        run: |
-      - name: Merge to main
-        run: |
-          git merge --no-ff ${{ env.service-branch }}
-      - name: Push merge
-        run: |
-          git push origin main
-      - name: Delete branch
-        run: |
-          git checkout main
-          git branch -d ${{ env.service-branch }}
-          git push origin -d ${{ env.service-branch }}
+          git commit -m "Add service configuration for ${{ inputs.repositoryName }}"
+          git st
+          git log --oneline
+      # - name: Push branch
+      #   run: git push -u origin ${{ env.service-branch }}
+      # - name: Validate branch
+      #   run: |
+      # - name: Merge to main
+      #   run: |
+      #     git merge --no-ff ${{ env.service-branch }}
+      # - name: Push merge
+      #   run: |
+      #     git push origin main
+      # - name: Delete branch
+      #   run: |
+      #     git checkout main
+      #     git branch -d ${{ env.service-branch }}
+      #     git push origin -d ${{ env.service-branch }}
