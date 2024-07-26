@@ -46,9 +46,9 @@ jobs:
         run: git checkout -b ${{ env.service-branch }}
       - name: make service directories
         run: |
-          mkdir -p ${{ env.service-root }}/infra-dev ${{ env.service-root }}/management
-          mkdir -p ${{ env.service-root }}/dev  ${{ env.service-root }}/test
-          mkdir -p ${{ env.service-root }}/perf-test ${{ env.service-root }}/prod
+          for cdpenv in ${{ env.cdp-environments }}; do
+            mkdir -p ${{ env.service-root }}/${cdpenv}
+          done
       - name: Create empty service configurations
         run: |
           echo "${{ env.config-comment }}" >> ${{ env.service-root }}/defaults.env
