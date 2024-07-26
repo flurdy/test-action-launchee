@@ -59,12 +59,11 @@ jobs:
           cat ${{ env.service-root }}/defaults.env
           echo "Contents of ${{ env.service-root }}/dev/${{ inputs.serviceName }}.env"
           cat ${{ env.service-root }}/dev/${{ inputs.serviceName }}.env
-
       # - name: Configure git committer
-      # - name: Commit changes
-      #   run: |
-      #     git add ${{ env.service-root }}
-      #     git commit -m "Add service configuration for ${{ inputs.serviceName }}"
+      - name: Commit changes
+        run: |
+          git add ${{ env.service-root }}
+          git commit -m "Add service configuration for ${{ inputs.serviceName }}"
       # - name: Push branch
       #   run: git push -u origin ${{ env.service-branch }}
       # - name: Validate branch
