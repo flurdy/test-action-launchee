@@ -58,7 +58,7 @@ jobs:
           echo "Contents of ${{ env.service-root }}/defaults.env"
           cat ${{ env.service-root }}/defaults.env
           echo "Contents of ${{ env.service-root }}/dev/${{ inputs.serviceName }}.env"
-          cat ${{ env.service-root }}/dev.env
+          cat ${{ env.service-root }}/dev/${{ inputs.serviceName }}.env
 
       # - name: Configure git committer
       # - name: Commit changes
