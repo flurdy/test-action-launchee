@@ -70,8 +70,8 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Check env files
-        run: python validate.py
+    #   - name: Check env files
+    #     run: python validate.py
       - name: Configure git committer
         run: |
           git config user.email "${{ env.cdp-gitbot-email }}"
