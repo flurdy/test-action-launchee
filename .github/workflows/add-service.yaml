@@ -14,17 +14,14 @@ on:
         required: true
         type: string
 
-concurrency:
-  group: ${{ github.workflow }}
-  cancel-in-progress: false
-
 run-name: ${{ inputs.repositoryName }}
 
-permissions:
-  contents: write
+concurrency:
+  group: ${{ github.workflow }}-${{ inputs.repositoryName }}
+  cancel-in-progress: false
 
 env:
-  service-branch: create-config-${{ inputs.repositoryName }}
+  service-branch: add-config-${{ inputs.repositoryName }}-${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}
   service-root: "services/${{ inputs.repositoryName }}"
   config-comment: "# Config for ${{ inputs.repositoryName }}, settings should be in KEY=value format"
   cdp-environments: "infra-dev management dev test perf-test prod"
@@ -58,13 +55,6 @@ jobs:
           for cdpenv in ${{ env.cdp-environments }}; do
             echo "${{ env.config-comment }}" >> ${{ env.service-root }}/${cdpenv}/${{ inputs.repositoryName }}.env
           done
-      - name: List changes
-        run: |
-          tree ${{ env.service-root }}
-          echo "Contents of ${{ env.service-root }}/defaults.env"
-          cat ${{ env.service-root }}/defaults.env
-          echo "Contents of ${{ env.service-root }}/dev/${{ inputs.repositoryName }}.env"
-          cat ${{ env.service-root }}/dev/${{ inputs.repositoryName }}.env
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
         with:
@@ -79,8 +69,6 @@ jobs:
         run: |
           git add ${{ env.service-root }}
           git commit -m "Add service configuration for ${{ inputs.repositoryName }}"
-          git status
-          git log --oneline
       - name: Push branch
         run: git push -u origin ${{ env.service-branch }}
       - name: Merge to main
@@ -88,8 +76,7 @@ jobs:
           git checkout main
           git merge --no-ff ${{ env.service-branch }}
       - name: Push merge
-        run: |
-          git push origin main
+        run: git push origin main
       - name: Delete branch
         run: |
           git branch -d ${{ env.service-branch }}
