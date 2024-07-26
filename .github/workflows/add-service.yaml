@@ -17,7 +17,7 @@ on:
 run-name: ${{ inputs.repositoryName }}
 
 concurrency:
-  group: ${{ github.workflow }}-${{ inputs.repositoryName }}
+  group: "add-or-remove-service-config"
   cancel-in-progress: false
 
 env:

@@ -17,7 +17,7 @@ on:
 run-name: ${{ inputs.repositoryName }}
 
 concurrency:
-  group: ${{ github.workflow }}-${{ inputs.repositoryName }}
+  group: "add-or-remove-service-config"
   cancel-in-progress: false
 
 env:
@@ -55,21 +55,39 @@ jobs:
           git config user.name "${{ env.cdp-gitbot-name }}"
       - name: Remove service files
         run: |
-          git rm ${{ env.service-root }}/defaults.env
+          if test -f "${{ env.service-root }}/defaults.env"; then
+            git rm ${{ env.service-root }}/defaults.env
+          fi
           for cdpenv in ${{ env.cdp-environments }}; do
-            git rm ${{ env.service-root }}/${cdpenv}/${{ inputs.repositoryName }}.env
+            if test -f "${{ env.service-root }}/${cdpenv}/${{ inputs.repositoryName }}.env"; then
+              git rm ${{ env.service-root }}/${cdpenv}/${{ inputs.repositoryName }}.env
+            fi
           done
       # - name: Check config post removal
       #   run: python validate.py
       - name: Commit changes
         run: |
-          git commit -m "Remove service configuration for ${{ inputs.repositoryName }}"
+          if [[ -z "$(git status -s)" ]]; then
+            echo "No removed config files to commit"
+            exit 1
+          else
+            git commit -m "Remove service configuration for ${{ inputs.repositoryName }}"
+          fi
       - name: Push branch
-        run: git push -u origin ${{ env.service-branch }}
+        run: |
+          if [[ -z "$(git diff main...)" ]]; then
+            echo "No commits to push"
+          else
+            git push -u origin ${{ env.service-branch }}
+          fi
       - name: Merge to main
         run: |
           git checkout main
-          git merge --no-ff ${{ env.service-branch }}
+          if [[ -z "$(git diff main...)" ]]; then
+            echo "No changes to merge"
+          else
+            git merge --no-ff ${{ env.service-branch }}
+          fi
       - name: Push merge
         run: git push origin main
       - name: Delete branch
