@@ -16,12 +16,17 @@ on:
 
 run-name: ${{ inputs.repositoryName }}
 
+permissions:
+  id-token: write
+  contents: write
+  pull-requests: write
+  actions: read
+
 concurrency:
   group: "add-or-remove-service-config"
   cancel-in-progress: false
 
 env:
-  service-branch: add-config-${{ inputs.repositoryName }}-${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}
   service-root: "services/${{ inputs.repositoryName }}"
   config-comment: "# Config for ${{ inputs.repositoryName }}, settings should be in KEY=value format"
   cdp-environments: "infra-dev management dev test perf-test prod"
@@ -34,16 +39,31 @@ jobs:
   add_service:
     name: "Add a new service"
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     defaults:
       run:
         shell: bash
+    outputs:
+      commit-hash: ${{ steps.setting-output.outputs.commit-hash }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      - name: Checkout new branch
-        run: git checkout -b ${{ env.service-branch }}
+
+      # - name: Get token
+      #   id: get-token
+      #   uses: DEFRA/cdp-build-action/get-github-token@main
+      #   with:
+      #     role_to_assume: arn:aws:iam::094954420758:role/app-config-role
+      #     private_key_id: cdp/platform/gh_apps/DEFRA/cdp-gh-action/private-key
+      #     app_id: 405317
+      #     email: ${{ env.cdp-gitbot-email }}
+      #     username: ${{ env.cdp-gitbot-name }}
+
+      - name: Configure git committer
+        run: |
+          git config user.email "${{ env.cdp-gitbot-email }}"
+          git config user.name "${{ env.cdp-gitbot-name }}"
+      - name: Ensure up to date main branch
+        run: git pull
       - name: make service directories
         run: |
           for cdpenv in ${{ env.cdp-environments }}; do
@@ -51,33 +71,48 @@ jobs:
           done
       - name: Create empty service configurations
         run: |
-          echo "${{ env.config-comment }}" >> ${{ env.service-root }}/defaults.env
+          if test ! -e "${{ env.service-root }}/defaults.env"; then
+            echo "${{ env.config-comment }}" >> ${{ env.service-root }}/defaults.env
+          fi
           for cdpenv in ${{ env.cdp-environments }}; do
-            echo "${{ env.config-comment }}" >> ${{ env.service-root }}/${cdpenv}/${{ inputs.repositoryName }}.env
+            if test ! -e "${{ env.service-root }}/${cdpenv}/${{ inputs.repositoryName }}.env"; then
+              echo "${{ env.config-comment }}" >> ${{ env.service-root }}/${cdpenv}/${{ inputs.repositoryName }}.env
+            fi
           done
-      - name: Set up Python ${{ matrix.python-version }}
+      - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: "3.10"
       # - name: Check env files
-      #   run: python validate.py
-      - name: Configure git committer
-        run: |
-          git config user.email "${{ env.cdp-gitbot-email }}"
-          git config user.name "${{ env.cdp-gitbot-name }}"
+        # run: python validate.py
       - name: Commit changes
         run: |
-          git add ${{ env.service-root }}
-          git commit -m "Add service configuration for ${{ inputs.repositoryName }}"
+          if [[ -z "$(git status -s)" ]]; then
+            echo "No config files added to commit"
+            exit 1
+          else
+            git add ${{ env.service-root }}
+            git commit -m "Add service configuration for ${{ inputs.repositoryName }}"
+          fi
       - name: Push branch
-        run: git push -u origin ${{ env.service-branch }}
-      - name: Merge to main
-        run: |
-          git checkout main
-          git merge --no-ff ${{ env.service-branch }}
-      - name: Push merge
         run: git push origin main
-      - name: Delete branch
-        run: |
-          git branch -d ${{ env.service-branch }}
-          git push origin -d ${{ env.service-branch }}
+      - name: Setting output
+        id: setting-output
+        run: echo "commit-hash=$(git rev-parse --verify HEAD)" >> "$GITHUB_OUTPUT"
+
+   debug-apply:
+     name: "Apply changes"
+     needs: add_service
+     runs-on: ubuntu-latest
+     steps:
+       - name: Checkout repository#
+         run: |
+           echo the hash was ${{ github.sha }}
+           echo the hash is ${{ needs.add_service.outputs.commit-hash }}
+
+#   apply:
+#     name: "Apply changes"
+#     needs: add_service
+#     uses: DEFRA/cdp-build-action/tf-build/apply@main
+#     with:
+#       commit-hash: ${{ github.sha }}
