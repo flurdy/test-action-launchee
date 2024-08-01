@@ -100,15 +100,15 @@ jobs:
         id: setting-output
         run: echo "commit-hash=$(git rev-parse --verify HEAD)" >> "$GITHUB_OUTPUT"
 
-   debug-apply:
-     name: "Apply changes"
-     needs: add_service
-     runs-on: ubuntu-latest
-     steps:
-       - name: Checkout repository#
-         run: |
-           echo the hash was ${{ github.sha }}
-           echo the hash is ${{ needs.add_service.outputs.commit-hash }}
+  debug-apply:
+    name: "Apply changes"
+    needs: add_service 
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository#
+        run: |
+          echo the hash was ${{ github.sha }}
+          echo the hash is ${{ needs.add_service.outputs.commit-hash }}
 
 #   apply:
 #     name: "Apply changes"
