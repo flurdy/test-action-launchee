@@ -47,6 +47,25 @@ jobs:
         uses: actions/checkout@v4
       - name: Ensure up to date main branch
         run: git pull
+      - name: Configure git committer
+        run: |
+          git config user.email "${{ env.cdp-gitbot-email }}"
+          git config user.name "${{ env.cdp-gitbot-name }}"
+      - name: Ensure up to date main branch
+        run: git pull
+      - name: make service directories
+        run: |
+          for cdpenv in ${{ env.cdp-environments }}; do
+            mkdir -p ${{ env.service-root }}/${cdpenv}
+          done
+      - name: Create empty service configurations
+        run: |
+          if test ! -e "${{ env.service-root }}/defaults.env"; then
+            echo "heeellooo" >> ${{ env.service-root }}/defaults.env
+          fi
+          git add ${{ env.service-root }}
+          git commit -m "Add service configuration for ${{ inputs.repositoryName }}"
+          git push
       - name: Setting output
         id: setting-output
         run: echo "commit-ref=$(git rev-parse --verify HEAD)" >> "$GITHUB_OUTPUT"
