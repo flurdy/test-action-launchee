@@ -45,12 +45,12 @@ jobs:
       - name: Get commit hash
         id: commit-hash
         run: |
-          echo commit ref 1 is ${{ inputs.commit-ref }}
-          echo commit ref 2 is ${{ github.event.inputs.commit-ref }}
-          if [ -z "${{ github.event.inputs.commit-ref }}" ]; then
+          echo commit ref is ${{ inputs.commit-ref }}
+          echo github ref is ${{ github.sha }}
+          if [ -z "${{ inputs.commit-ref }}" ]; then
             echo "commit-ref=${{ github.sha }}" >> $GITHUB_OUTPUT
           else
-            echo "commit-ref=${{ github.event.inputs.commit-ref }}" >> $GITHUB_OUTPUT
+            echo "commit-ref=${{ inputs.commit-ref }}" >> $GITHUB_OUTPUT
           fi
 
   update_config_environment:
