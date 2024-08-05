@@ -1,0 +1,59 @@
+name: Remove service configuration
+
+on:
+  workflow_call:
+    inputs:
+      repositoryName:
+        description: "Repository name"
+        required: true
+        type: string
+  workflow_dispatch:
+    inputs:
+      repositoryName:
+        description: "Repository name"
+        required: true
+        type: string
+
+run-name: ${{ inputs.repositoryName }}
+
+permissions:
+  id-token: write
+  contents: write
+  pull-requests: write
+  actions: read
+
+concurrency:
+  group: "add-or-remove-service-config"
+  cancel-in-progress: false
+
+env:
+  service-root: "services/${{ inputs.repositoryName }}"
+  cdp-environments: "infra-dev management dev test perf-test prod"
+  cdp-gitbot-email: "30552+flurdy@users.noreply.github.com"
+  cdp-gitbot-name: "flurdy"
+
+
+jobs:
+  remove_service:
+    name: "Remove a service"
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    outputs:
+      commit-ref: ${{ steps.setting-output.outputs.commit-ref }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Ensure up to date main branch
+        run: git pull
+      - name: Setting output
+        id: setting-output
+        run: echo "commit-ref=$(git rev-parse --verify HEAD)" >> "$GITHUB_OUTPUT"
+
+  apply:
+    name: "Apply changes"
+    needs: remove_service
+    uses: ./.github/workflows/branch-trigger.yml
+    with:
+      commit-ref: ${{ needs.remove_service.outputs.commit-ref }}
