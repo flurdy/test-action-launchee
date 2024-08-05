@@ -18,13 +18,13 @@ on:
       commit-ref:
         description: The commit ref to sync
         type: string
-        required: false
+        required: true
   workflow_dispatch:
     inputs:
       commit-ref:
         description: The commit ref to sync, empty means HEAD
         type: string
-        required: false
+        required: true
 
 concurrency:
   group: ${{ github.workflow }}
@@ -45,12 +45,14 @@ jobs:
       - name: Get commit hash
         id: commit-hash
         run: |
+          echo commit ref 1 is ${{ inputs.commit-ref }}
+          echo commit ref 2 is ${{ github.event.inputs.commit-ref }}
           if [ -z "${{ github.event.inputs.commit-ref }}" ]; then
             echo "commit-ref=${{ github.sha }}" >> $GITHUB_OUTPUT
           else
             echo "commit-ref=${{ github.event.inputs.commit-ref }}" >> $GITHUB_OUTPUT
           fi
-          
+
   update_config_environment:
     strategy:
       matrix:
