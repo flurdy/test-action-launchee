@@ -46,11 +46,11 @@ jobs:
         id: commit-hash
         run: |
           if [ -z "${{ github.event.inputs.commit-ref }}" ]; then
-            echo "::set-output name=commit-ref::${{ github.sha }}"
+            echo "commit-ref=${{ github.sha }}" >> $GITHUB_OUTPUT
           else
-            echo "::set-output name=commit-ref::${{ github.event.inputs.commit-ref }}"
+            echo "commit-ref=${{ github.event.inputs.commit-ref }}" >> $GITHUB_OUTPUT
           fi
-
+          
   update_config_environment:
     strategy:
       matrix:
