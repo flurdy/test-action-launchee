@@ -70,7 +70,7 @@ jobs:
         id: setting-output
         run: |
           echo "commit-ref=$(git rev-parse --verify HEAD)" >> "$GITHUB_OUTPUT"
-          echo the output ref is $(commit-ref)
+          echo the output ref is $(git rev-parse --verify HEAD)
 
   apply-debug:
     name: "debug Apply changes"
