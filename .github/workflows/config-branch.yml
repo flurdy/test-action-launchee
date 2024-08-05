@@ -68,7 +68,9 @@ jobs:
           git push
       - name: Setting output
         id: setting-output
-        run: echo "commit-ref=$(git rev-parse --verify HEAD)" >> "$GITHUB_OUTPUT"
+        run: |
+          echo "commit-ref=$(git rev-parse --verify HEAD)" >> "$GITHUB_OUTPUT"
+          echo the output ref is $(commit-ref)
 
   apply-debug:
     name: "debug Apply changes"
