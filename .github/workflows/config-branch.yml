@@ -51,9 +51,22 @@ jobs:
         id: setting-output
         run: echo "commit-ref=$(git rev-parse --verify HEAD)" >> "$GITHUB_OUTPUT"
 
+  apply-debug:
+    name: "debug Apply changes"
+    needs: remove_service
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: echo-commit-ref
+        run: echo REF IS ${{ needs.remove_service.outputs.commit-ref }}
+
+
   apply:
     name: "Apply changes"
     needs: remove_service
     uses: ./.github/workflows/branch-trigger.yml
     with:
       commit-ref: ${{ needs.remove_service.outputs.commit-ref }}
+    
